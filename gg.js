@@ -1,60 +1,38 @@
 document.addEventListener("DOMContentLoaded", function () {
-    var canvas = document.createElement("canvas");
-    canvas.id = "sparkCanvas";
-    document.body.appendChild(canvas);
+    document.addEventListener("mousemove", function (e) {
+        let spark = document.createElement("div");
+        spark.className = "spark";
+        document.body.appendChild(spark);
 
-    var ctx = canvas.getContext("2d"),
-        particles = [];
+        let x = e.clientX + window.scrollX; // Menyesuaikan posisi dengan scroll
+        let y = e.clientY + window.scrollY; 
 
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
+        spark.style.left = `${x}px`;
+        spark.style.top = `${y}px`;
 
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
-    function Particle(x, y) {
-        this.x = x;
-        this.y = y;
-        this.radius = Math.random() * 3 + 1.5;
-        this.color = "rgba(" + (Math.floor(Math.random() * 100) + 200) + "," +
-            (Math.floor(Math.random() * 100) + 50) + ",0,";
-        this.alpha = 1;
-        this.speedX = (Math.random() - 0.5) * 2;
-        this.speedY = (Math.random() - 0.5) * 2 - 1.5;
-    }
-
-    Particle.prototype.update = function () {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.alpha -= 0.03;
-    };
-
-    Particle.prototype.draw = function () {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color + this.alpha + ")";
-        ctx.fill();
-    };
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (var i = particles.length - 1; i >= 0; i--) {
-            particles[i].update();
-            particles[i].draw();
-            if (particles[i].alpha <= 0) {
-                particles.splice(i, 1);
-            }
-        }
-        requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    window.addEventListener("mousemove", function (e) {
-        for (var i = 0; i < 5; i++) {
-            particles.push(new Particle(e.clientX, e.clientY));
-        }
+        setTimeout(() => {
+            spark.remove();
+        }, 500);
     });
 });
+
+// Tambahkan CSS untuk Efek Percikan
+let style = document.createElement("style");
+style.innerHTML = `
+    .spark {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: orange;
+        border-radius: 50%;
+        pointer-events: none;
+        box-shadow: 0 0 15px rgba(255, 165, 0, 0.8);
+        animation: fadeOut 0.5s linear;
+    }
+
+    @keyframes fadeOut {
+        0% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(2); }
+    }
+`;
+document.head.appendChild(style);
